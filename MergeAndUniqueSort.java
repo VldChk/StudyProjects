@@ -4,40 +4,17 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
-/**
- * Created by Vladyslav on 18.05.2018.
- */
 public class MergeAndUniqueSort {
 
-    static void Sort(String[] words, int start, int end)
-    {
-        for (int i = start; i < end; i++)
-        {
-            if (words[i].compareTo(words[i+1]) > 0)
-            {
-                String midRes = words[i+1];
-                words[i+1] = words[i];
-                words[i] = midRes;
-            }
-        }
-    }
-
-    static String[] Merge(String[] words, int f_start_p, int f_end_p, int s_start_p, int s_end_p)
+    static String[] Merge(String[] words, int f_start_p, int mid, int s_end_p)
     {
         String [] result = new String [s_end_p - f_start_p + 1];
         int k = f_start_p;
-        int j = s_start_p;
-        int i = f_start_p;
-        while (k <= f_end_p || j <= s_end_p)
+        int j = mid + 1;
+        int i = 0;
+        while (k <= mid && j <= s_end_p)
         {
-            if (k > f_end_p)
-            {
-                result[i] = words[j];
-                j++;
-            } else if (j > s_end_p) {
-                result[i] = words [k];
-                k++;
-            } else if (words[k].compareTo(words[j]) <= 0) {
+            if (words[k].compareTo(words[j]) <= 0) {
                 result[i] = words[k];
                 k++;
             } else {
@@ -47,36 +24,76 @@ public class MergeAndUniqueSort {
             i++;
         }
 
+        while (k <= mid)
+        {
+            result[i] = words[k];
+            i++;
+            k++;
+        }
+
+        while (j <= s_end_p)
+        {
+            result[i] = words[j];
+            i++;
+            j++;
+        }
+
+        i = 0;
+
         for (int id = f_start_p; id <= s_end_p; id++)
         {
-            words[id] = result[id];
+            words[id] = result[i];
+            i++;
         }
 
         return words;
     }
 
+    static String[] Uniqueness (String[] input)
+    {
+        int i = 1;
+        for (int j = 1; j < input.length; j++)
+        {
+            if (input[j-1].compareTo(input [j]) < 0)
+            {
+                i++;
+            }
+        }
+
+        String [] result = new String[i];
+
+        result [0] = input[0];
+        i = 1;
+
+        for (int j = 1; j < input.length; j++)
+        {
+            if (input[j-1].compareTo(input [j]) < 0)
+            {
+                result[i] = input[j];
+                i++;
+            }
+        }
+
+        return result;
+    }
+
     static String[] MergeSort (String[] words, int start_p, int end_p)
     {
         int mid_p = start_p + (end_p - start_p) / 2;
-        if (end_p - start_p > 4)
+        if (end_p - start_p > 1)
         {
             MergeSort(words, start_p, mid_p);
             MergeSort(words,mid_p + 1, end_p);
-        } else
-        {
-            Sort(words, start_p, mid_p);
-            Sort(words, mid_p + 1, end_p);
         }
 
-        return Merge(words, start_p, mid_p, mid_p+1, end_p);
+        return Merge(words, start_p, mid_p, end_p);
     }
 	
 	static String[] MainMergeSort (String[] input)
 	{
-		String [] words = new String [input.length];
 		int start_p = 0;
 		int end_p = input.length - 1;
-		return MergeSort(input, start_p, end_p);
+		return Uniqueness(MergeSort(input, start_p, end_p));
 	}
 
     public static void main(String[] args) {
