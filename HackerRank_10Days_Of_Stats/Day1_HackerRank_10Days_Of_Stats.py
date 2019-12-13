@@ -48,4 +48,4 @@ median = values[int(num_of_values / 2)] if num_of_values % 2 == 1 else (values[i
 
 print("{:.1f}".format(mean))
 print("{:.1f}".format(median))
-print(mode_values)
+print(mode_values[0])
